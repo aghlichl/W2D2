@@ -1,16 +1,16 @@
-require_relative 'bishop'
-require_relative 'knight'
-require_relative 'rook'
-require_relative 'pawn'
-require_relative 'king'
-require_relative 'queen'
-require_relative 'null_piece'
+require_relative 'pieces/bishop'
+require_relative 'pieces/knight'
+require_relative 'pieces/rook'
+require_relative 'pieces/pawn'
+require_relative 'pieces/king'
+require_relative 'pieces/queen'
+require_relative 'pieces/null_piece'
 require_relative 'errors'
 
 class Board 
         
     def self.empty_board
-        Array.new(8) { Array.new(8, nil) }
+        Array.new(8) { Array.new(8, NullPiece.instance) }
     end
 
     def self.filled_board
@@ -45,7 +45,6 @@ class Board
         grid[x][y]
     end 
 
-
     def move_piece(start_pos, end_pos)
         raise NoPieceError unless self[start_pos]
         raise OffBoardError unless valid_move?(end_pos)
@@ -53,12 +52,7 @@ class Board
         self[start_pos] = nil
     end 
 
-    private 
-
     def valid_move?(pos)
         pos.all?{|x| (0..7).include?(x)}
-    end 
-
-
-
+    end
 end 

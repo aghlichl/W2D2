@@ -3,7 +3,7 @@ require 'colorize'
 class Piece
     def initialize(color)
         @color = color 
-    end 
+    end
 
     def to_s
         color == :black ? piece.colorize(:black) : piece.colorize(:blue)
