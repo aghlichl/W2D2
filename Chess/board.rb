@@ -9,30 +9,11 @@ require_relative 'errors'
 
 class Board 
         
-    def self.empty_board
-        Array.new(8) { Array.new(8, NullPiece.instance) }
-    end
-
-    def self.filled_board
-        empty_board = Board.empty_board
-        empty_board[0], empty_board[-1] = Board.outside_row(:black), Board.outside_row(:blue)
-        empty_board[1], empty_board[-2] = Board.pawn_row(:black), Board.pawn_row(:blue)
-        empty_board
-    end 
-
-    def self.pawn_row(color)
-        Array.new(8, Pawn.new(color))
-    end 
-
-    def self.outside_row(color)
-        [Rook.new(color), Knight.new(color), Bishop.new(color), Queen.new(color), 
-        King.new(color), Bishop.new(color), Knight.new(color), Rook.new(color)]
-    end
-
+  
     attr_reader :grid
 
     def initialize
-        @grid = Board.filled_board
+       fill_board
     end
 
     def []=(pos, piece)
@@ -48,11 +29,48 @@ class Board
     def move_piece(start_pos, end_pos)
         raise NoPieceError unless self[start_pos]
         raise OffBoardError unless valid_move?(end_pos)
+        return false unless self[start_pos].moves.include?(end_pos)
         self[end_pos] = self[start_pos]
-        self[start_pos] = nil
+        self[start_pos] = NullPiece.instance
     end 
 
     def valid_move?(pos)
         pos.all?{|x| (0..7).include?(x)}
     end
+
+    def in_check?(color)
+
+    end
+
+    private
+
+    def set_unfilled_board
+        @grid = Array.new(8) { Array.new(8, NullPiece.instance) }
+    end
+
+    def fill_board
+        set_unfilled_board
+        set_pawn_rows
+        set_outside_rows
+    end 
+
+    def set_pawn_rows
+        [1, 6].each do |row|
+            (0..7).each do |col|
+                color = (row == 1 ? :black : :white)
+                @grid[row][col] = Pawn.new(color, self, [row, col])
+            end
+        end 
+    end 
+
+    def set_outside_rows
+        [0, 7].each do |row|
+            next_col = (0..7).each
+            color = (row == 0 ? :black : :white)
+            [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook].each do |piece|
+                @grid[row][next_col.peek] = piece.new(color, self, [row, next_col.next]) 
+            end 
+        end
+    end
+
 end 

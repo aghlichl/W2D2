@@ -32,11 +32,12 @@ MOVES = {
 
 class Cursor
 
-  attr_reader :cursor_pos, :board
+  attr_reader :cursor_pos, :board, :selected_position
 
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
     @board = board
+    @selected_position = nil
   end
 
   def get_input
@@ -76,8 +77,26 @@ class Cursor
   end
 
   def handle_key(key)
+    case key
+    when :left
+      update_pos(MOVES[:left])
+    when :right
+      update_pos(MOVES[:right])
+    when :up
+      update_pos(MOVES[:up])
+    when :down
+      update_pos(MOVES[:down])
+    when :return, :space
+      @selected_position = cursor_pos # FIXME selected to nil if not empty
+      cursor_pos
+    when :ctrl_c
+      Process.exit(0)
+    end
   end
 
   def update_pos(diff)
+    new_position = [@cursor_pos.first + diff.first, @cursor_pos.last + diff.last]
+    @cursor_pos = new_position if board.valid_move?(new_position)
+    nil
   end
 end

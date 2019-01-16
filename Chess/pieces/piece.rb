@@ -1,12 +1,18 @@
 require 'colorize'
 
 class Piece
-    def initialize(color)
+    def initialize(color, board, pos)
         @color = color 
+        @board = board
+        @pos = pos
     end
 
     def to_s
-        color == :black ? piece.colorize(:black) : piece.colorize(:blue)
+       piece.colorize(color)
+    end
+
+    def inspect
+        "#{self.class}:#{@pos}-#{@color}"
     end
     
     protected
